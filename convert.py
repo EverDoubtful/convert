@@ -3,7 +3,6 @@ import sys
 __author__ = 'Alex'
 
 #filein = open('navi.txt','r')
-#=ЕСЛИ( ABS(((H$4:H$12298)-H3)>1);"+";"") - EXCEL MACROS
 
 
 #try:
@@ -25,16 +24,23 @@ cntPack = 0
 mask = 0
 cntDisCoincidence = 0
 packPrev = 0
-
+lineEnterings = 0
+packet='0'
 for line in filein:
 
     if(line.split(',')[0] == '$PGIO'):
+        packPrev = int(packet)
         packet = line.split(',')[3]
         #print "packPrev = ", packPrev, "Packet = ",int(packet)
         #if( (packPrev !=0 ) & ((packPrev + 1) != int(packet)) ):
         #    cntDisCoincidence = cntDisCoincidence + 1
         #    print "Packet #: ", packet
         #packPrev = int(packet)
+
+        if(mask == 0x01):
+            print "Packet pure PGIO #: ", packPrev
+            lineEnterings  = lineEnterings+1
+
         mask = mask | 0x01
     elif(line.split(',')[0] == '$GPRMC'):
         time = line.split(',')[1]
@@ -53,8 +59,8 @@ for line in filein:
     elif(line.split(',')[0] == '$MLG'):
         mileage = line.split(',')[1].zfill(3)
         speed = line.split(',')[2][:-4].zfill(3)
-
         mask = mask | 0x08
+
     if(mask == 0x0f):
         mask = 0
         cntPack = cntPack+1
@@ -62,8 +68,8 @@ for line in filein:
 #"date=",date,"time=",time,"lat=",lat,"long=",long,"course=",course
         #print result
         #fileout.write(' '.join([packet,gln,gps,mileage,speed,date,time,lat,long,course])+'\n')
-        if(date == '02/12/11'):
-            fileout.write(' '.join([packet,gln,gps,date,time,lat,long,mileage,speed,course])+'\n')
+        #if(date == '23/11/11'):
+        fileout.write(' '.join([packet,gln,gps,date,time,lat,long,mileage,speed,course])+'\n')
 
 #print "Packets = ",cntPack, "Missed : ",cntDisCoincidence
 
@@ -87,10 +93,10 @@ for line in strList:
     packet = line.split(' ')[0]
     if( (packPrev !=0 ) & ((packPrev + 1) != int(packet)) ):
             cntDisCoincidence = cntDisCoincidence + 1
-            print "Packet #: ", packet
+            #print "Packet #: ", packet
     packPrev = int(packet)
 
-print "Packets = ",cntPack, "Missed after sort: ",cntDisCoincidence
+print "Packets = ",cntPack, "Missed after sort: ",cntDisCoincidence, "Enterings PGIO= ",lineEnterings
 
 filein.close()
 fileout.close()

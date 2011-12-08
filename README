@@ -1,1 +1,3 @@
 This file was created by PyCharm 1.5.4 for binding GitHub repository
+
+#=ЕСЛИ(( ABS((H$4:H$12298)-H3)>1);"+";"") - EXCEL MACROS
